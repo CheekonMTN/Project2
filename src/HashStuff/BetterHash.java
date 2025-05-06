@@ -65,6 +65,7 @@ public class BetterHash {
             }
         }
     }
+
     public int getCollisions() {
         int total = 0;
         for (LinkedList<String> bucket : data) {
@@ -74,21 +75,9 @@ public class BetterHash {
         }
         return total;
     }
-    // Prints bucket collisions
-    public void printCollisions() {
-        System.out.println("Collisions:");
-        for (int i = 0; i < capacity; i++) {
-            int collisions = data[i].size() - 1;
-            if (collisions > 0) {
-                System.out.printf("Index %d: %d collisions\n", i, collisions);
-            }
-        }
-    }
 
-    // Prints Table
-    public void printTable() {
-        for (int i = 0; i < capacity; i++) {
-            System.out.printf("Bucket %d: %s\n", i, data[i]);
-        }
+
+    public LinkedList<String>[] getData() {
+        return data;
     }
 }

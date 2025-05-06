@@ -4,9 +4,11 @@ import CSVStuff.DataHandler;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
 import org.jfree.chart.JFreeChart;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
 
 public class HashMapTester {
@@ -48,12 +50,43 @@ public class HashMapTester {
 
         createChart(addTimeSeries, "Addition Time", "Operations", "Time (ms)");
         createChart(collisionSeries, "Collisions", "Operations", "Number of Collisions");
+        graphNameLengths(map);
     }
 
     private static void createChart(XYSeries series, String title, String xLabel, String yLabel) {
         XYSeriesCollection dataset = new XYSeriesCollection(series);
         JFreeChart chart = ChartFactory.createXYLineChart(title, xLabel, yLabel, dataset);
         ChartFrame frame = new ChartFrame(title, chart);
+        frame.pack();
+        frame.setVisible(true);
+    }
+
+    private static void graphNameLengths(BetterHash map) {
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+        // Get internal data structure from BetterHash
+        LinkedList<String>[] data = map.getData();
+
+        // For each bucket, calculate average name length
+        for (int i = 0; i < data.length; i++) {
+            if (data[i].isEmpty()) continue;
+
+            double avgLength = data[i].stream()
+                    .mapToInt(String::length)
+                    .average()
+                    .orElse(0);
+
+            dataset.addValue(avgLength, "Average Name Length", "Bucket " + i);
+        }
+
+        JFreeChart chart = ChartFactory.createBarChart(
+                "Name Lengths by Bucket",
+                "Bucket",
+                "Average Length",
+                dataset
+        );
+
+        ChartFrame frame = new ChartFrame("Name Lengths Distribution", chart);
         frame.pack();
         frame.setVisible(true);
     }

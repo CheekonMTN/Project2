@@ -1,24 +1,35 @@
 package CSVStuff;
 
-import CSVStuff.Salter;
-
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.List;
+import java.io.*;
+import java.util.*;
+import static java.lang.Math.sin;
 
 public class Plotter {
+    public static void main(String[] args) {
+        // Generate sin points
+        List<Point> sinGraph = new ArrayList<>();
+        for (double x = -10; x <= 10; x += 0.01) {
+            sinGraph.add(new Point(x, sin(x)));
+        }
+        exportCSV(sinGraph, "sin.csv");
 
-    // takes a list of points and dumps them into a CSV file
-    public static void exportCSV(List<Salter.Point> data, String filename) {
-        try (FileWriter writer = new FileWriter(filename)) {
-            writer.write("X,Y\n"); // add header so Excel doesn’t get confused
-            for (Salter.Point point : data) {
-                writer.write(point.x + "," + point.y + "\n");
+        // Salt the data
+        List<Point> saltedData = Salter.saltData(sinGraph, -0.05, 0.05);
+        exportCSV(saltedData, "salted_sin.csv");
+
+        // Smooth the data
+        List<Point> smoothedData = Smoother.smoothData(saltedData, 25);
+        exportCSV(smoothedData, "smoothed_sin.csv");
+    }
+
+    public static void exportCSV(List<? extends Point> data, String filename) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(filename))) {
+            writer.println("x,y");
+            for (Point p : data) {
+                writer.println(p.toString());
             }
-            System.out.println("Saved to: " + filename);
         } catch (IOException e) {
-            System.err.println("Couldn't write file: " + e.getMessage());
+            System.err.println("Error writing file: " + e.getMessage());
         }
     }
 }
-
